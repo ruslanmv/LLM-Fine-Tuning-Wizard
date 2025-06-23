@@ -1,0 +1,67 @@
+/* static/css/style.css */
+
+/*
+ * This file contains the custom styles for the LLM Fine-Tuning Wizard.
+ * We are using a base of Tailwind CSS loaded via CDN in the HTML,
+ * and this file adds some specific component styles and overrides.
+ */
+
+/* Sets the base font for the entire application to 'Inter' for a clean, modern look. */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6; /* A light gray background for a soft appearance */
+}
+
+/* Styles for the main content cards that hold each step of the wizard. */
+.step-card {
+    background-color: white;
+    border-radius: 0.75rem; /* Rounded corners for a modern feel */
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* Subtle shadow for depth */
+    transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+}
+
+/* Adds a slightly larger shadow when a user hovers over a step card to provide feedback. */
+.step-card:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Defines the style for the primary action button (e.g., "Start Fine-Tuning"). */
+.btn-primary {
+    background-color: #4f46e5; /* A strong indigo color to draw attention */
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s; /* Smooth color change on hover */
+}
+
+/* Darkens the primary button on hover to indicate it's clickable. */
+.btn-primary:hover {
+    background-color: #4338ca;
+}
+
+/* Standard styling for all text input fields. */
+.input-field {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db; /* A light gray border */
+    border-radius: 0.5rem;
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transitions for focus state */
+}
+
+/* Provides visual feedback when an input field is focused by the user. */
+.input-field:focus {
+    outline: none; /* Removes the default browser outline */
+    border-color: #4f46e5; /* Changes border color to match the primary button */
+    box-shadow: 0 0 0 3px rgb(79 70 229 / 0.2); /* Adds a soft glow effect */
+}
+
+/* Styles the preview box for displaying data templates. */
+.template-preview {
+    background-color: #1f2937; /* A dark background for code/data snippets */
+    color: #d1d5db; /* Light text for contrast */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-family: monospace; /* Uses a monospaced font for code readability */
+    white-space: pre-wrap; /* Ensures the text wraps within the box */
+}

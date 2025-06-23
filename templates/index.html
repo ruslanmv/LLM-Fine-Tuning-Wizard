@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Fine-Tuning Wizard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .step-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        .step-card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .btn-primary {
+            background-color: #4f46e5;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #4338ca;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgb(79 70 229 / 0.2);
+        }
+        .template-preview {
+            background-color: #1f2937;
+            color: #d1d5db;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-4xl">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900">LLM Fine-Tuning Wizard</h1>
+            <p class="text-lg text-gray-600 mt-2">Fine-tune Unsloth and IBM Granite models step-by-step.</p>
+        </header>
+
+        <div class="space-y-8">
+            <!-- Step 1: Select Fine-Tuning Type -->
+            <div class="step-card p-6">
+                <h2 class="text-2xl font-semibold mb-4 flex items-center"><span class="bg-indigo-100 text-indigo-700 rounded-full h-8 w-8 text-sm font-bold flex items-center justify-center mr-3">1</span>Select Fine-Tuning Type</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button onclick="selectTuningType('classification')" class="p-4 border rounded-lg text-left hover:bg-indigo-50 hover:border-indigo-500 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <h3 class="font-bold text-lg">Classification</h3>
+                        <p class="text-sm text-gray-600">Classify text into predefined labels.</p>
+                    </button>
+                    <button onclick="selectTuningType('generation')" class="p-4 border rounded-lg text-left hover:bg-indigo-50 hover:border-indigo-500 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <h3 class="font-bold text-lg">Generation</h3>
+                        <p class="text-sm text-gray-600">Generate text in a similar format.</p>
+                    </button>
+                    <button onclick="selectTuningType('summarization')" class="p-4 border rounded-lg text-left hover:bg-indigo-50 hover:border-indigo-500 transition focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <h3 class="font-bold text-lg">Summarization</h3>
+                        <p class="text-sm text-gray-600">Summarize long passages of text.</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Classification Specific Options -->
+            <div id="classification-options" class="step-card p-6 hidden">
+                <h3 class="text-xl font-semibold mb-4">Classification Setup</h3>
+                <label for="classes" class="block text-sm font-medium text-gray-700">Define Classes (up to 10, comma-separated)</label>
+                <input type="text" id="classes" class="input-field mt-1" placeholder="e.g., Spam, Not Spam, Urgent">
+            </div>
+
+            <!-- Step 2: Add Training Data -->
+            <div class="step-card p-6">
+                <h2 class="text-2xl font-semibold mb-4 flex items-center"><span class="bg-indigo-100 text-indigo-700 rounded-full h-8 w-8 text-sm font-bold flex items-center justify-center mr-3">2</span>Add Training Data</h2>
+                <p class="text-gray-600 mb-4">Upload a JSONL or JSON file with input-output pairs. Max 10,000 samples, 200MB.</p>
+                <input type="file" id="dataFile" class="input-field">
+                <div class="mt-4">
+                    <h4 class="font-semibold mb-2">Data Format Preview (JSONL)</h4>
+                    <div class="template-preview">{"input":"&lt;text&gt;","output":"&lt;text&gt;"}<br>{"input":"&lt;text&gt;","output":"&lt;text&gt;"}</div>
+                </div>
+            </div>
+            
+            <!-- Step 3: Configure Parameters -->
+            <div class="step-card p-6">
+                <h2 class="text-2xl font-semibold mb-4 flex items-center"><span class="bg-indigo-100 text-indigo-700 rounded-full h-8 w-8 text-sm font-bold flex items-center justify-center mr-3">3</span>Configure Parameters</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="max-input-tokens" class="block text-sm font-medium text-gray-700">Maximum Input Tokens</label>
+                        <input type="number" id="max-input-tokens" class="input-field mt-1" value="256">
+                    </div>
+                    <div>
+                        <label for="max-output-tokens" class="block text-sm font-medium text-gray-700">Maximum Output Tokens</label>
+                        <input type="number" id="max-output-tokens" class="input-field mt-1" value="128">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Verbalizer Template -->
+            <div class="step-card p-6">
+                 <h2 class="text-2xl font-semibold mb-4 flex items-center"><span class="bg-indigo-100 text-indigo-700 rounded-full h-8 w-8 text-sm font-bold flex items-center justify-center mr-3">4</span>Verbalizer Template</h2>
+                 <p class="text-gray-600 mb-4">Do your prompts need special formatting?</p>
+                <div class="flex items-center space-x-4">
+                    <label><input type="radio" name="verbalizer" value="default" checked onchange="toggleVerbalizer(false)"> No, use default</label>
+                    <label><input type="radio" name="verbalizer" value="custom" onchange="toggleVerbalizer(true)"> Yes, edit</label>
+                </div>
+                <div id="verbalizer-editor" class="mt-4 hidden">
+                    <textarea id="verbalizer-template" class="input-field h-24">{{input}}</textarea>
+                </div>
+            </div>
+
+            <!-- Step 5: Start Tuning -->
+            <div class="text-center mt-10">
+                <button id="start-tuning-btn" class="btn-primary text-xl" onclick="startTuning()">
+                    <i class="fas fa-rocket mr-2"></i>Start Fine-Tuning
+                </button>
+            </div>
+        </div>
+        
+        <!-- Status/Log Output -->
+        <div id="status-log" class="mt-8 p-6 bg-gray-900 text-white rounded-lg shadow-inner hidden">
+            <h3 class="text-xl font-semibold mb-4">Fine-Tuning Log</h3>
+            <pre id="log-output" class="text-sm font-mono whitespace-pre-wrap h-64 overflow-y-auto"></pre>
+        </div>
+
+    </div>
+
+    <script>
+        let tuningType = '';
+
+        function selectTuningType(type) {
+            tuningType = type;
+            // Highlight selected button
+            document.querySelectorAll('button[onclick^="selectTuningType"]').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-50');
+            });
+            event.currentTarget.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-50');
+
+            // Show/hide classification options
+            const classOptions = document.getElementById('classification-options');
+            if (type === 'classification') {
+                classOptions.classList.remove('hidden');
+            } else {
+                classOptions.classList.add('hidden');
+            }
+        }
+
+        function toggleVerbalizer(show) {
+            document.getElementById('verbalizer-editor').classList.toggle('hidden', !show);
+        }
+
+        async function startTuning() {
+            if (!tuningType) {
+                alert('Please select a fine-tuning type first!');
+                return;
+            }
+
+            const dataFile = document.getElementById('dataFile').files[0];
+            if (!dataFile) {
+                alert('Please upload a training data file!');
+                return;
+            }
+
+            // Show log area
+            const statusLog = document.getElementById('status-log');
+            const logOutput = document.getElementById('log-output');
+            statusLog.classList.remove('hidden');
+            logOutput.textContent = 'Preparing to start fine-tuning...\n';
+            
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const fileContent = event.target.result;
+                
+                const formData = {
+                    tuningType: tuningType,
+                    classes: document.getElementById('classes').value,
+                    maxInputTokens: document.getElementById('max-input-tokens').value,
+                    maxOutputTokens: document.getElementById('max-output-tokens').value,
+                    useCustomVerbalizer: document.querySelector('input[name="verbalizer"]:checked').value === 'custom',
+                    verbalizerTemplate: document.getElementById('verbalizer-template').value,
+                    dataFileContent: fileContent,
+                };
+
+                logOutput.textContent += 'Sending request to server...\n';
+
+                try {
+                    const response = await fetch('/start-finetuning', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        logOutput.textContent += `Server responded: ${result.message}\n`;
+                        logOutput.textContent += 'Fine-tuning process has been initiated in the background.\n';
+                    } else {
+                        throw new Error(result.message || 'An unknown error occurred.');
+                    }
+
+                } catch (error) {
+                    logOutput.textContent += `Error: ${error.message}\n`;
+                    console.error('Error starting fine-tuning:', error);
+                }
+            };
+
+            reader.readAsText(dataFile);
+        }
+    </script>
+</body>
+</html>
