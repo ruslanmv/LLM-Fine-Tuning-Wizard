@@ -2,7 +2,7 @@
 
 Welcome to our series on building a complete web-based wizard for fine-tuning Large Language Models! In this series, we will create a user-friendly interface using Flask that allows users to fine-tune various Unsloth-compatible models for tasks like classification, generation, and summarization.
 
-![](assets/2025-06-23-10-41-27.png)
+![](assets/2025-06-23-10-42-58.png)
 
 ## Part 1: Project Structure and a Basic UI
 
